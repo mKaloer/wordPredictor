@@ -86,6 +86,9 @@ docs/_build/
 # PyBuilder
 target/
 
+# Virtualenv
+venv
+
 .DS_Store
 .AppleDouble
 .LSOverride
