@@ -3,16 +3,16 @@ from scipy.sparse import dok_matrix
 import numpy as np
 import re
 
-class WordSuggester(object):
-    """Main entry point for word suggestions."""
+class WordPredictor(object):
+    """Main entry point for word predictions."""
 
     def __init__(self, order=2, case_sensitive=True, vocab_size=65536):
-        """Instantiate new word suggestor.
+        """Instantiate new word predictor.
 
         Arguments:
         order -- The order of the underlying Markov chain,
                  i.e. the number of terms to take into account.
-        case_sensitive -- Whether or not the suggestor is case sensitive.
+        case_sensitive -- Whether or not the predictor is case sensitive.
         vocab_size -- The maximum number of unique words.
         """
         self.order = order
@@ -60,13 +60,13 @@ class WordSuggester(object):
                 self._transitions[state, str_hash] += 1
             hash_deq.append(str_hash)
 
-    def suggest(self, text):
-        """Suggest a number of following word candidates based on the given text.
+    def predict(self, text):
+        """Predict a number of following word candidates based on the given text.
 
         Arguments:
         text -- The temporary phrase
 
-        Returns suggested words as an array of (word, probability) pairs
+        Returns predicted words as an array of (word, probability) pairs
         """
         tokens = self._tokenize_phrase(text)
         str_hash = 0
