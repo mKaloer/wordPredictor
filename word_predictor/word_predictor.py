@@ -1,8 +1,9 @@
 from collections import deque
 from scipy.sparse import dok_matrix
 import numpy as np
+from nltk.tokenize import wordpunct_tokenize
 import re
-
+import pdb
 class WordPredictor(object):
     """Main entry point for word predictions."""
 
@@ -23,7 +24,6 @@ class WordPredictor(object):
         # Mapping from id to term
         self._term_lookup = {}
         self._id_ctr = 0
-
         # The matrix size is vocabulary size times the order of the markov chain.
         # We represent a n'th order markov chain as a 1st order chain with state
         # representation [k-1, n-2, ..., k-n].
@@ -32,7 +32,7 @@ class WordPredictor(object):
 
     def _tokenize_phrase(self, phrase):
         """Tokenizes the given phrase."""
-        tokens = re.findall(r"[\w']+|[.,!?;]", phrase)
+        tokens = wordpunct_tokenize(phrase)
         if not self.case_sensitive:
             return [x.lower() for x in tokens]
         else:

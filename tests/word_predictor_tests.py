@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 from word_predictor.word_predictor import WordPredictor
 from nose.tools import *
 
-class TestWordPredictor():
+class TestWordPredictor(object):
 
     @classmethod
     def setup_class(cls):
@@ -84,3 +85,13 @@ class TestWordPredictor():
             ("it", 0.142857143)
         ]
         self.assert_almost_eq_predictions(expected, predictions)
+
+
+    def test_unicode(self):
+        wp = WordPredictor(order=1, case_sensitive=False)
+        wp.learn_from_sentence(u"This is a test 👮")
+        predictions = wp.predict("This is a test")
+        expected = [
+            (u"👮", 1.0),
+        ]
+        eq_(expected, predictions)
