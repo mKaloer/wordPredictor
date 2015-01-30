@@ -6,7 +6,7 @@ from nltk.tokenize import wordpunct_tokenize
 class WordPredictor(object):
     """Main entry point for word predictions."""
 
-    def __init__(self, order=2, case_sensitive=True, vocab_size=65536):
+    def __init__(self, order=2, case_sensitive=True, vocab_size=10000):
         """Instantiate new word predictor.
 
         Arguments:
@@ -23,11 +23,10 @@ class WordPredictor(object):
         # Mapping from id to term
         self._term_lookup = {}
         self._id_ctr = 0
-        # The matrix size is vocabulary size times the order of the markov chain.
+        # The matrix size is vocabulary size to the power of the order of the markov chain.
         # We represent a n'th order markov chain as a 1st order chain with state
         # representation [k-1, n-2, ..., k-n].
-        trans_dim = pow(self.vocab_size, self.order)
-        self._transitions = dok_matrix((trans_dim, trans_dim), dtype=np.uint32)
+        self._transitions = dok_matrix((pow(self.vocab_size, self.order), vocab_size), dtype=np.uint32)
         self._transitions_csr = None
 
     def _tokenize_phrase(self, phrase):
@@ -44,7 +43,7 @@ class WordPredictor(object):
         hash_deq = deque([], maxlen=self.order)
         for word in self._tokenize_phrase(text):
             if not word in self._id_lookup:
-                if self._id_ctr > self.vocab_size:
+                if self._id_ctr >= self.vocab_size:
                     # Skip if vocabulary size is exceeded
                     continue
                 self._id_lookup[word] = self._id_ctr
@@ -89,8 +88,7 @@ class WordPredictor(object):
                            self._id_lookup[tokens[len(tokens)-1-n]]
         # Convert matrix to csr for faster calculations
         if self._transitions_csr == None:
-            trans_dim = pow(self.vocab_size, self.order)
-            self._transitions_csr = csr_matrix((trans_dim, trans_dim), dtype=np.uint32)
+            self._transitions_csr = csr_matrix(self._transitions)
         row = self._transitions_csr[str_hash, :]
         nonzero = row.nonzero()
         # P(k-1, k-2,...k-n)
