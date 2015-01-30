@@ -26,7 +26,7 @@ class TestWordPredictor(object):
     def test_first_order(self):
         wp = WordPredictor(order=1, case_sensitive=True)
         for s in self.corpus:
-            wp.learn_from_sentence(s)
+            wp.learn_from_text(s)
         predictions = wp.predict("that is")
         expected = [
             ("not", 0.2),
@@ -42,7 +42,7 @@ class TestWordPredictor(object):
     def test_second_order_regular(self):
         wp = WordPredictor(order=2, case_sensitive=True)
         for s in self.corpus:
-            wp.learn_from_sentence(s)
+            wp.learn_from_text(s)
         predictions = wp.predict("that is")
         expected = [
             ("is", 0.25),
@@ -55,7 +55,7 @@ class TestWordPredictor(object):
     def test_second_order_single_unknown_word(self):
         wp = WordPredictor(order=2, case_sensitive=True)
         for s in self.corpus:
-            wp.learn_from_sentence(s)
+            wp.learn_from_text(s)
         predictions = wp.predict("that")
         expected = [
             ("is", 0.66666667),
@@ -67,7 +67,7 @@ class TestWordPredictor(object):
     def test_first_order_case_sensitive(self):
         wp = WordPredictor(order=1, case_sensitive=True)
         for s in self.corpus:
-            wp.learn_from_sentence(s)
+            wp.learn_from_text(s)
         predictions = wp.predict("That")
         expected = [
             ("that", 1.0)
@@ -77,7 +77,7 @@ class TestWordPredictor(object):
     def test_first_order_case_insensitive(self):
         wp = WordPredictor(order=1, case_sensitive=False)
         for s in self.corpus:
-            wp.learn_from_sentence(s)
+            wp.learn_from_text(s)
         predictions = wp.predict("That")
         expected = [
             ("is", 0.571428571),
@@ -89,7 +89,7 @@ class TestWordPredictor(object):
 
     def test_unicode(self):
         wp = WordPredictor(order=1, case_sensitive=False)
-        wp.learn_from_sentence(u"This is a test 👮")
+        wp.learn_from_text(u"This is a test 👮")
         predictions = wp.predict("This is a test")
         expected = [
             (u"👮", 1.0),

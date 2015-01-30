@@ -37,11 +37,11 @@ class WordPredictor(object):
         else:
             return tokens
 
-    def learn_from_sentence(self, sentence):
-        """Learn from the given sentence"""
-        # If first word of sentence, previous is the empty string
+    def learn_from_text(self, text):
+        """Learn from the given text"""
+        # If first word of text, previous is the empty string
         hash_deq = deque([], maxlen=self.order)
-        for word in self._tokenize_phrase(sentence):
+        for word in self._tokenize_phrase(text):
             if not word in self._id_lookup:
                 if self._id_ctr > self.vocab_size:
                     # Skip if vocabulary size is exceeded
