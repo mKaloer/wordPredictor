@@ -2,8 +2,7 @@ from collections import deque
 from scipy.sparse import dok_matrix
 import numpy as np
 from nltk.tokenize import wordpunct_tokenize
-import re
-import pdb
+
 class WordPredictor(object):
     """Main entry point for word predictions."""
 
