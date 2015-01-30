@@ -1,5 +1,5 @@
 from collections import deque
-from scipy.sparse import dok_matrix
+from scipy.sparse import dok_matrix, csr_matrix
 import numpy as np
 from nltk.tokenize import wordpunct_tokenize
 
@@ -28,6 +28,7 @@ class WordPredictor(object):
         # representation [k-1, n-2, ..., k-n].
         trans_dim = pow(self.vocab_size, self.order)
         self._transitions = dok_matrix((trans_dim, trans_dim), dtype=np.uint32)
+        self._transitions_csr = None
 
     def _tokenize_phrase(self, phrase):
         """Tokenizes the given phrase."""
@@ -58,6 +59,8 @@ class WordPredictor(object):
                 # Update counts for state
                 self._transitions[state, str_hash] += 1
             hash_deq.append(str_hash)
+        # Invalidate eventually generated csr matrix
+        self._transitions_csr = None
 
     def predict(self, text):
         """Predict a number of following word candidates based on the given text.
@@ -68,18 +71,30 @@ class WordPredictor(object):
         Returns predicted words as an array of (word, probability) pairs
         """
         tokens = self._tokenize_phrase(text)
+        return self._predict_from_tokens(tokens)
+
+    def _predict_from_tokens(self, tokens):
+        """Predict a number of following word candidates based on the given tokens.
+
+        Arguments:
+        text -- The temporary phrase
+
+        Returns predicted words as an array of (word, probability) pairs
+        """
         str_hash = 0
         # Find ids for n previous words
         for n in range(0, self.order):
             if len(tokens) >= n+1 and tokens[len(tokens)-1-n] in self._id_lookup:
                 str_hash = (str_hash * self.vocab_size) + \
                            self._id_lookup[tokens[len(tokens)-1-n]]
-        row = self._transitions[str_hash, :]
+        # Convert matrix to csr for faster calculations
+        if self._transitions_csr == None:
+            trans_dim = pow(self.vocab_size, self.order)
+            self._transitions_csr = csr_matrix((trans_dim, trans_dim), dtype=np.uint32)
+        row = self._transitions_csr[str_hash, :]
         nonzero = row.nonzero()
         # P(k-1, k-2,...k-n)
-        state_tot = 0#self._transitions[h,:].sum()
-        for elmt in nonzero[1]:
-            state_tot += row[0, elmt]
+        state_tot = row.sum()
         # Find P(k,k-1,..k-n)
         terms = []
         for elmt in nonzero[1]:
