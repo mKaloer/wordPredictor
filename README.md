@@ -24,6 +24,7 @@ is calculated by estimating the joint probabilities from the frequencies in the 
 Each term in the vocabulary is associated with an index starting from 0. Every time a new term is found, its id is the previous id incremented by one. To convert a sequence of terms into a phrase-term matrix index, the following hash function is used:
 Matrix index for phrase ![sn sn-1 ... s0](https://raw.github.com/mkaloer/wordPredictor/master/doc/eq_phrase.png), where ![si](https://raw.github.com/mkaloer/wordPredictor/master/doc/eq_phrase_i.png) is the term at index ```ì```, is calculated as:
 ![sum(i=0..n) (index(s_i) + V^i)](https://raw.github.com/mkaloer/wordPredictor/master/doc/eq_hash.png)
+
 Where ![V](https://raw.github.com/mkaloer/wordPredictor/master/doc/eq_v.png) is the length of the vocabulary.
 
 ## Known Issues
