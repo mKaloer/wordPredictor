@@ -32,4 +32,4 @@ Where ![V](https://raw.github.com/mkaloer/wordPredictor/master/doc/eq_v.png) is 
 
 ## Known Issues
 ### Bad Hash Function
-The size of the range of the hash function is ```V^O```, which, even with a relatively small vocabulary size and Markov chain order, causes some indices to be unrepresentable by a 32-bit integer. This induces memory errors in the SciPy library. A solution could be to calculate the joint probabilities instead of measuring them, reducing the matrix dimensions to ```V*O```.
+The size of the range of the hash function is ```V^O```, which, even with a relatively small vocabulary size and Markov chain order, causes some indices to be unrepresentable by a 32-bit integer. This induces memory errors in the SciPy library. A solution could be to make the assumption that the probabilities are independent, and then calculate the joint probabilities instead of measuring them, reducing the matrix dimensions to ```V*O```.
