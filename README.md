@@ -17,12 +17,15 @@ Create an instance of ```WordPredictor``` and start training it by providing it 
 
 ## How it works
 The predictor learns a n-th order Markov chain based on the training data. It stores a phrase-term sparse matrix of term sequence frequencies, with rows representing the ```n``` previous terms and columns representing the following term. The dimension of the matrix is ![V^OxV](https://raw.github.com/mkaloer/wordPredictor/master/doc/eq_matrix_size.png), where ![V](https://raw.github.com/mkaloer/wordPredictor/master/doc/eq_v.png) is the size of the vocabulary and ![O](https://raw.github.com/mkaloer/wordPredictor/master/doc/eq_o.png) the order of the markov chain. When a word is to be predicted, the probability:
+
 ![P(Xn+1|Xn,Xn-1,...,Xn-O+1)](https://raw.github.com/mkaloer/wordPredictor/master/doc/eq_predict.png)
+
 is calculated by estimating the joint probabilities from the frequencies in the training data.
 
 ### Hashing
 Each term in the vocabulary is associated with an index starting from 0. Every time a new term is found, its id is the previous id incremented by one. To convert a sequence of terms into a phrase-term matrix index, the following hash function is used:
 Matrix index for phrase ![sn sn-1 ... s0](https://raw.github.com/mkaloer/wordPredictor/master/doc/eq_phrase.png), where ![si](https://raw.github.com/mkaloer/wordPredictor/master/doc/eq_phrase_i.png) is the term at index ```ì```, is calculated as:
+
 ![sum(i=0..n) (index(s_i) + V^i)](https://raw.github.com/mkaloer/wordPredictor/master/doc/eq_hash.png)
 
 Where ![V](https://raw.github.com/mkaloer/wordPredictor/master/doc/eq_v.png) is the length of the vocabulary.
