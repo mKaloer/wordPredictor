@@ -91,9 +91,9 @@ class WordPredictor(object):
             self._transitions_csr = csr_matrix(self._transitions)
         row = self._transitions_csr[str_hash, :]
         nonzero = row.nonzero()
-        # P(k-1, k-2,...k-n)
+        # P(k, k-1,...k-n+1)
         state_tot = row.sum()
-        # Find P(k,k-1,..k-n)
+        # Find P(k+1,k,k-1,..k-n+1)
         terms = []
         for elmt in nonzero[1]:
             val = row[0, elmt]
