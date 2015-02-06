@@ -2,7 +2,7 @@
 Predicts your next word.
 
 ## Usage
-Create an instance of ```WordPredictor``` and start training it by providing it sample text. After training, the next term can be predicted by calling the ´´´predict()´´´ method with the preceding phrase. The following shows how to train the predictor with the Gutenberg corpus provided by NLTK and predict three terms based on the user input:
+Create an instance of ```WordPredictor``` and start training it by providing it sample text. After training, the next term can be predicted by calling the ```predict()``` method with the preceding phrase. The ```predict()``` method returns a Patricia-trie of the words, making it possible to perform fast prefix lookup. The following shows how to train the predictor with the Gutenberg corpus provided by NLTK and predict three terms based on the user input:
 
     from word_predictor.word_predictor import WordPredictor
 	import nltk
@@ -13,7 +13,7 @@ Create an instance of ```WordPredictor``` and start training it by providing it 
     print "Ready"
     while True:
         phrase = raw_input()
-        print wp.predict(phrase)[0:3]
+        print wp.predict(phrase).terms()[0:3]
 
 ## How it works
 The predictor learns a n-th order Markov chain based on the training data. It stores a phrase-term sparse matrix of term sequence frequencies, with rows representing the ```n``` previous terms and columns representing the following term. The dimension of the matrix is ![V^OxV](https://raw.github.com/mkaloer/wordPredictor/master/doc/eq_matrix_size.png), where ![V](https://raw.github.com/mkaloer/wordPredictor/master/doc/eq_v.png) is the size of the vocabulary and ![O](https://raw.github.com/mkaloer/wordPredictor/master/doc/eq_o.png) the order of the markov chain. When a word is to be predicted, the probability:

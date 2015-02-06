@@ -27,7 +27,7 @@ class TestWordPredictor(object):
         wp = WordPredictor(order=1, case_sensitive=True)
         for s in self.corpus:
             wp.learn_from_text(s)
-        predictions = wp.predict("that is")
+        predictions = wp.predict("that is").terms()
         expected = [
             ("not", 0.2),
             ("that", 0.2),
@@ -50,7 +50,7 @@ class TestWordPredictor(object):
             ("past", 0.25),
             ("the", 0.25)
         ]
-        eq_(expected, predictions)
+        eq_(expected, predictions.terms())
 
     def test_second_order_single_unknown_word(self):
         wp = WordPredictor(order=2, case_sensitive=True)
@@ -62,7 +62,7 @@ class TestWordPredictor(object):
             ("it", 0.16666667),
             ("that", 0.16666667)
         ]
-        self.assert_almost_eq_predictions(expected, predictions)
+        self.assert_almost_eq_predictions(expected, predictions.terms())
 
     def test_first_order_case_sensitive(self):
         wp = WordPredictor(order=1, case_sensitive=True)
@@ -72,7 +72,7 @@ class TestWordPredictor(object):
         expected = [
             ("that", 1.0)
         ]
-        eq_(expected, predictions)
+        eq_(expected, predictions.terms())
 
     def test_first_order_case_insensitive(self):
         wp = WordPredictor(order=1, case_sensitive=False)
@@ -84,7 +84,7 @@ class TestWordPredictor(object):
             ("that", 0.285714286),
             ("it", 0.142857143)
         ]
-        self.assert_almost_eq_predictions(expected, predictions)
+        self.assert_almost_eq_predictions(expected, predictions.terms())
 
 
     def test_unicode(self):
@@ -93,5 +93,16 @@ class TestWordPredictor(object):
         predictions = wp.predict("This is a test")
         expected = [
             (u"👮", 1.0),
+        ]
+        eq_(expected, predictions.terms())
+
+    def test_prefix(self):
+        wp = WordPredictor(order=1, case_sensitive=True)
+        for s in self.corpus:
+            wp.learn_from_text(s)
+        predictions = wp.predict("that is").terms("th")
+        expected = [
+            ("that", 0.2),
+            ("the", 0.2)
         ]
         eq_(expected, predictions)

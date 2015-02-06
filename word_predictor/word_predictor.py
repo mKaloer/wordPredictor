@@ -2,6 +2,7 @@ from collections import deque
 from scipy.sparse import dok_matrix, csr_matrix
 import numpy as np
 from nltk.tokenize import wordpunct_tokenize
+import marisa_trie
 
 class WordPredictor(object):
     """Main entry point for word predictions."""
@@ -67,7 +68,7 @@ class WordPredictor(object):
         Arguments:
         text -- The temporary phrase
 
-        Returns predicted words as an array of (word, probability) pairs
+        Returns the predicted words as a Patricia-trie (PatriciaTrieWrapper instance).
         """
         tokens = self._tokenize_phrase(text)
         return self._predict_from_tokens(tokens)
@@ -78,7 +79,7 @@ class WordPredictor(object):
         Arguments:
         text -- The temporary phrase
 
-        Returns predicted words as an array of (word, probability) pairs
+        Returns the predicted words as a Patricia-trie (PatriciaTrieWrapper instance).
         """
         str_hash = 0
         # Find ids for n previous words
@@ -94,9 +95,37 @@ class WordPredictor(object):
         # P(k, k-1,...k-n+1)
         state_tot = row.sum()
         # Find P(k+1,k,k-1,..k-n+1)
-        terms = []
+        terms = {}
         for elmt in nonzero[1]:
             val = row[0, elmt]
             prob = val / float(state_tot)
-            terms.append((self._term_lookup[elmt], prob))
+            terms[self._term_lookup[elmt]] = prob
+
+        # Convert to Patricia-trie
+        return PatriciaTrieWrapper(terms)
+
+class PatriciaTrieWrapper(object):
+    """
+    Patricia Trie (wrapper of the marisa_trie class)
+    """
+
+    def __init__(self, terms):
+        self._terms = terms
+        self._trie = marisa_trie.Trie(terms.keys())
+
+    def terms(self, prefix=""):
+        """Get the terms ordered by probability, starting by given prefix.
+
+        Arguments:
+        prefix -- The prefix of the terms.
+
+        Returns a sorted list of predicted words starting with the specified
+        prefix, as an array of (word, probability) pairs. Notice that if a
+        prefix is specified, the probabilities may not be normalized for
+        performance reasons.
+        """
+        # Array of (term, probability)
+        terms = []
+        for w in self._trie.iterkeys(unicode(prefix)):
+            terms.append((w, self._terms[w]))
         return sorted(terms, key=lambda x: (-x[1], x[0]))
