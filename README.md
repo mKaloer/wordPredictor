@@ -1,5 +1,5 @@
 # Word Predictor
-Predicts your next word.
+Predicts your next word. Can be used for predictive typing as seen in the SwiftKey keyboard and iOS QuickType.
 
 ## Usage
 Create an instance of ```WordPredictor``` and start training it by providing it sample text. After training, the next term can be predicted by calling the ```predict()``` method with the preceding phrase. The ```predict()``` method returns a Patricia-trie of the words, making it possible to perform fast prefix lookup. The following shows how to train the predictor with the Gutenberg corpus provided by NLTK and predict three terms based on the user input:
@@ -33,3 +33,7 @@ Where ![V](https://raw.github.com/mkaloer/wordPredictor/master/doc/eq_v.png) is 
 ## Known Issues
 ### Bad Hash Function
 The size of the range of the hash function is ```V^O```, which, even with a relatively small vocabulary size and Markov chain order, causes some indices to be unrepresentable by a 32-bit integer. This induces memory errors in the SciPy library. A solution could be to make the assumption that the probabilities are independent, and then calculate the joint probabilities instead of measuring them, reducing the matrix dimensions to ```V*O```.
+
+## Future Work
+### Context-based suggestions
+The ability to specify different contexts (such as email, sms, specific contacts, etc.) and retrieve predictions based on that context.
